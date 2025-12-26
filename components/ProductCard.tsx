@@ -53,6 +53,7 @@ export default function ProductCard({ product, onPress }: ProductCardProps) {
 const styles = StyleSheet.create({
     card: {
         flex: 1, // Allow card to fill available column width
+        marginHorizontal: 4, // Add horizontal spacing between columns
         borderRadius: 16,
         marginBottom: 16,
         elevation: 4,
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     },
     thumbnail: {
         width: '100%',
-        height: 200,                // Slightly taller
+        height: 120,                // Smaller height for 3-column grid
         resizeMode: 'contain',      // Ensure whole product is visible
     },
     badge: {

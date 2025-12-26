@@ -53,12 +53,12 @@ export default function ProductListScreen() {
             )}
 
             <FlatList
-                key={'product-grid-6'} // Force re-render when switching layouts if we were dynamic, good practice
+                key={`product-grid-3`}
                 data={products}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.list}
-                numColumns={6}
+                numColumns={3}
                 columnWrapperStyle={styles.columnWrapper}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
