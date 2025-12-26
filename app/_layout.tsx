@@ -1,24 +1,55 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Slot, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import { ApiProvider } from '../contexts/ApiContext';
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+const MainLayout = () => {
+  const { userToken, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+  const { theme, colors } = useTheme();
 
-export const unstable_settings = {
-  anchor: '(tabs)',
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === '(app)';
+
+    if (userToken && !inAuthGroup) {
+      router.replace('/(app)');
+    } else if (!userToken && segments[0] !== 'login') {
+      router.replace('/login');
+    }
+  }, [userToken, segments, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <Slot screenOptions={{ headerShown: false }} />
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+    </View>
+  );
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
+    <ThemeProvider>
+      <AuthProvider>
+        <ApiProvider>
+          <MainLayout />
+          <Toast />
+        </ApiProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
