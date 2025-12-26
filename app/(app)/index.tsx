@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import ProductCard from '../../components/ProductCard';
 import SearchBar from '../../components/SearchBar';
 import { Product, useApi } from '../../contexts/ApiContext';
@@ -39,6 +39,9 @@ export default function ProductListScreen() {
         );
     };
 
+    const { width } = useWindowDimensions();
+    const numColumns = width < 768 ? 3 : 6;
+
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <SearchBar value={search} onChangeText={handleSearch} />
@@ -53,12 +56,12 @@ export default function ProductListScreen() {
             )}
 
             <FlatList
-                key={`product-grid-3`}
+                key={`product-grid-${numColumns}`}
                 data={products}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.list}
-                numColumns={3}
+                numColumns={numColumns}
                 columnWrapperStyle={styles.columnWrapper}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
